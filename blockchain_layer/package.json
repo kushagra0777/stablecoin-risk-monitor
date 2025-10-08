@@ -2,9 +2,10 @@
   "name": "blockchain_layer",
   "version": "1.0.0",
   "description": "",
-  "main": "hardhat.config.js",
+  "main": "hardhat.config.cjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy:all": "node scripts/deploy_all.cjs --network localhost"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.1.0",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@openzeppelin/contracts": "^4.9.3",
     "hardhat": "^2.26.3"
   },
   "type": "module",
