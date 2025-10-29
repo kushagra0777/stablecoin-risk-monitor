@@ -1,19 +1,50 @@
-from flask import Blueprint, jsonify
-from ai_engine.anomaly_detector import AnomalyDetector
-from ai_engine.feature_engineering import prepare_features
-import numpy as np
+from flask import Blueprint, jsonify, request
+from ai_engine.anomaly_detector import analyze_snapshot, analyze_from_live_data
 
-bp = Blueprint("risk", __name__, url_prefix="/api/risk")
+bp = Blueprint("risk_routes", __name__, url_prefix="/api/risk")
 
-@bp.route("/alert", methods=["GET"])
+@bp.route("/debug/alert", methods=["GET"])
 def alert():
-    model = AnomalyDetector()
-    training_data = np.array([[1000000, 1200000], [1100000, 1150000]])
-    model.train(training_data)
+    result = analyze_snapshot(reserves=1_000_000, supply=1_200_000)
 
-    test_point = [1500000, 900000]
-    result = model.predict(test_point)
+    if result["label"] in ["RISKY", "WARNING"]:
+        return jsonify({
+            "alert": "Anomaly Detected!",
+            "risk_score": result["risk_score"],
+            "label": result["label"],
+            "details": result["explanation"]
+        })
+    else:
+        return jsonify({
+            "alert": "All Good",
+            "risk_score": result["risk_score"],
+            "label": result["label"],
+            "details": result["explanation"]
+        })
 
-    if result == -1:
-        return jsonify({"alert": "🚨 Anomaly Detected!"})
-    return jsonify({"alert": "✅ All Good"})
+
+@bp.route("/analyze", methods=["POST"])
+def analyze():
+    data = request.get_json(force=True)
+    reserves = data.get("reserves", 0)
+    supply = data.get("supply", 0)
+    whales = data.get("whales", 0.0)
+    price = data.get("price", 1.0)
+    prev_reserves = data.get("prev_reserves")
+    prev_supply = data.get("prev_supply")
+
+    result = analyze_snapshot(
+        reserves=reserves,
+        supply=supply,
+        whales=whales,
+        price=price,
+        prev_reserves=prev_reserves,
+        prev_supply=prev_supply,
+    )
+    return jsonify(result)
+
+
+@bp.route("/analyze/live", methods=["GET"])
+def analyze_live():
+    result = analyze_from_live_data()
+    return jsonify(result)
