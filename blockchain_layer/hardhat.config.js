@@ -1,10 +1,18 @@
 
-import "@nomicfoundation/hardhat-toolbox";
-import dotenv from "dotenv";
-dotenv.config();
+require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
-export default {
-  solidity: "0.8.20",
+module.exports = {
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      },
+      viaIR: true
+    }
+  },
   networks: {
     hardhat: {},
     sepolia: {
