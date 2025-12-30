@@ -1,6 +1,16 @@
-def get_mock_reserves():
-    return [
-        {"account": "custodian1", "balance": 500000},
-        {"account": "custodian2", "balance": 700000},
-        {"account": "custodian3", "balance": 400000},
+import random
+import time
+
+def get_custodian_data():
+
+    total_reserves = random.uniform(950_000, 1_050_000)
+
+    custodian_breakdown = [
+        total_reserves * 0.6,
+        total_reserves * 0.4
     ]
+    return {
+        "totalReserves": float(total_reserves),
+        "custodians": [float(x) for x in custodian_breakdown],
+        "timestamp": time.time()
+    }
