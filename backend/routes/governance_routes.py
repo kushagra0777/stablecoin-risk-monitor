@@ -7,35 +7,13 @@ import os
 import json
 from pathlib import Path
 
-def _load_integration_env():
-    # If environment variables are missing, try to read integration/.env
-    env_path = Path(__file__).resolve().parents[2] / "integration" / ".env"
-    if not env_path.exists():
-        return
-    try:
-        for line in env_path.read_text().splitlines():
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            if '=' not in line:
-                continue
-            k, v = line.split('=', 1)
-            k = k.strip()
-            v = v.strip()
-            # don't override already set env vars
-            if os.getenv(k) is None:
-                os.environ[k] = v
-    except Exception:
-        # best-effort only
-        pass
+from backend.config import Config
+
+RPC_URL = Config.RPC_URL
+DAO_CONTRACT_ADDRESS = Config.DAO_CONTRACT_ADDRESS
+CONTRACT_ABI_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../blockchain_layer/contracts/GovernanceDAO.json'))
 
 gov_bp = Blueprint('governance', __name__)
-
-# Load environment variables
-_load_integration_env()
-RPC_URL = os.getenv('RPC_URL', 'http://127.0.0.1:8545')
-DAO_CONTRACT_ADDRESS = os.getenv('DAO_CONTRACT_ADDRESS')
-CONTRACT_ABI_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../blockchain_layer/contracts/GovernanceDAO.json'))
 
 # Load contract ABI (if available)
 contract_abi = None
@@ -50,7 +28,7 @@ w3 = Web3(Web3.HTTPProvider(RPC_URL))
 
 def _get_dao_contract():
     if not DAO_CONTRACT_ADDRESS:
-        return None, "DAO_CONTRACT_ADDRESS not set in environment (tried env and integration/.env)"
+        return None, "DAO_CONTRACT_ADDRESS not set in configuration"
     if contract_abi is None:
         return None, "GovernanceDAO ABI not found"
     try:
