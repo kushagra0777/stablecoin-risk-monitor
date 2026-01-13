@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ai_engine.anomaly_detector import ENGINE
+from backend.schemas import RiskAnalysisRequest
 
 bp = Blueprint("risk_routes", __name__, url_prefix="/api/risk")
 
@@ -27,20 +28,25 @@ def debug_alert():
 
 @bp.route("/analyze", methods=["POST"])
 def analyze_snapshot_api():
-    data = request.get_json(force=True)
+    try:
+        # Pydantic validation
+        data = request.get_json(force=True)
+        validated_data = RiskAnalysisRequest(**data)
+        
+        snapshot = {
+            "reserves": validated_data.reserves,
+            "supply": validated_data.supply,
+            "whale_supply": validated_data.whales,
+            "price": validated_data.price,
+            "prev_reserves": validated_data.prev_reserves if validated_data.prev_reserves is not None else validated_data.reserves,
+            "prev_supply": validated_data.prev_supply if validated_data.prev_supply is not None else validated_data.supply,
+            "custodians": validated_data.custodians
+        }
 
-    snapshot = {
-        "reserves": data.get("reserves", 0),
-        "supply": data.get("supply", 0),
-        "whale_supply": data.get("whales", 0.0),
-        "price": data.get("price", 1.0),
-        "prev_reserves": data.get("prev_reserves"),
-        "prev_supply": data.get("prev_supply"),
-        "custodians": data.get("custodians", [])
-    }
-
-    result = ENGINE.analyze_snapshot(snapshot)
-    return jsonify(result)
+        result = ENGINE.analyze_snapshot(snapshot)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @bp.route("/analyze/live", methods=["GET"])
