@@ -1,14 +1,30 @@
 
-# Stablecoin Risk Monitor
+# 🛡️ Stablecoin Risk Monitor
 
-A risk monitoring system for stablecoins, integrating on-chain data, exchange data, and AI-based anomaly detection.
+AI-powered risk monitoring system for stablecoins and financial assets with **Desktop GUI**, Excel import, and machine learning analysis.
 
-## Features
+## ✨ Key Features
 
-- **Data Collection**: Fetches data from exchanges (mock/real) and blockchain.
-- **Risk Analysis**: AI engine to detect anomalies in supply, reserves, and price.
-- **Governance Integration**: Monitors DAO proposals and votes.
-- **API**: REST API for frontend integration.
+- **🖥️ Desktop GUI**: Beautiful tkinter interface - no web server needed!
+- **📊 Excel Import**: Analyze .xlsx, .xls, CSV files instantly
+- **🤖 AI Analysis**: 19-feature ML models (Isolation Forest + XGBoost)
+- **🌐 Web API**: RESTful API for integration
+- **⚛️ React Frontend**: Modern web interface
+- **🔗 Blockchain**: Smart contracts for governance & proof of reserves
+
+## 🚀 Quick Start - Desktop GUI ⭐
+
+```bash
+# Windows - Just double-click!
+run_gui.bat
+
+# Or run manually
+python gui.py
+```
+
+**Then:** Browse → Select Excel → Analyze → Export! 
+
+📖 [Full GUI Guide](docs/GUI_USER_GUIDE.md) | [Quick Start](QUICK_START.md)
 
 ## Setup
 

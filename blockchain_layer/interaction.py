@@ -12,7 +12,6 @@ contract_address = "0xYourDeployedContract"
 contract = w3.eth.contract(address=contract_address, abi=abi)
 
 def update_supply(supply):
-    # TODO: Add tx signing
     tx = contract.functions.setSupply(supply).build_transaction()
     return tx
 
